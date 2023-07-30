@@ -1,0 +1,28 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = pd.read_csv('AirQuality.csv', sep=';')
+
+# Remove empty column (last column has double semicolon ';;')
+data.drop(data.columns[-1], axis=1, inplace=True)
+
+# Combine Date and Time columns into a single datetime column
+data['DateTime'] = pd.to_datetime(data['Date'] + ' ' + data['Time'], format='%d/%m/%Y %H.%M.%S')
+
+# Filter out any rows with NaN values in the DateTime column
+data.dropna(subset=['DateTime'], inplace=True)
+
+# Create a plot for each parameter
+parameters = ['CO(GT)', 'PT08.S1(CO)', 'NMHC(GT)', 'C6H6(GT)', 'PT08.S2(NMHC)',
+              'NOx(GT)', 'PT08.S3(NOx)', 'NO2(GT)', 'PT08.S4(NO2)', 'PT08.S5(O3)',
+              'T', 'RH', 'AH']
+
+for param in parameters:
+    plt.figure(figsize=(10, 6))
+    plt.plot(data['DateTime'], data[param])
+    plt.title(param)
+    plt.xlabel('Date and Time')
+    plt.ylabel('Value')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
